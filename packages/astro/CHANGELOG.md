@@ -1,5 +1,56 @@
 # astro
 
+## 6.0.0-beta.6
+
+### Major Changes
+
+- [#15332](https://github.com/withastro/astro/pull/15332) [`7c55f80`](https://github.com/withastro/astro/commit/7c55f80fa1fd91f8f71ad60437f81e6c7f98f69d) Thanks [@matthewp](https://github.com/matthewp)! - Adds frontmatter parsing support to `renderMarkdown` in content loaders. When markdown content includes frontmatter, it is now extracted and available in `metadata.frontmatter`, and excluded from the HTML output. This makes `renderMarkdown` behave consistently with the `glob` loader.
+
+  ```js
+  const loader = {
+    name: 'my-loader',
+    load: async ({ store, renderMarkdown }) => {
+      const content = `---
+  title: My Post
+  ---
+  
+  # Hello World
+  `;
+      const rendered = await renderMarkdown(content);
+      // rendered.metadata.frontmatter is now { title: 'My Post' }
+      // rendered.html contains only the content, not the frontmatter
+    },
+  };
+  ```
+
+### Minor Changes
+
+- [#15332](https://github.com/withastro/astro/pull/15332) [`7c55f80`](https://github.com/withastro/astro/commit/7c55f80fa1fd91f8f71ad60437f81e6c7f98f69d) Thanks [@matthewp](https://github.com/matthewp)! - Adds a `fileURL` option to `renderMarkdown` in content loaders, enabling resolution of relative image paths. When provided, relative image paths in markdown will be resolved relative to the specified file URL and included in `metadata.localImagePaths`.
+
+  ```js
+  const loader = {
+    name: 'my-loader',
+    load: async ({ store, renderMarkdown }) => {
+      const content = `
+  # My Post
+  
+  ![Local image](./image.png)
+  `;
+      // Provide a fileURL to resolve relative image paths
+      const fileURL = new URL('./posts/my-post.md', import.meta.url);
+      const rendered = await renderMarkdown(content, { fileURL });
+      // rendered.metadata.localImagePaths now contains the resolved image path
+    },
+  };
+  ```
+
+### Patch Changes
+
+- [#15331](https://github.com/withastro/astro/pull/15331) [`4592be5`](https://github.com/withastro/astro/commit/4592be5bb7490474fe5e204f60b7131d9a79dae5) Thanks [@matthewp](https://github.com/matthewp)! - Fixes an issue where API routes would overwrite public files during build. Public files now correctly take priority over generated routes in both dev and build modes.
+
+- Updated dependencies [[`7c55f80`](https://github.com/withastro/astro/commit/7c55f80fa1fd91f8f71ad60437f81e6c7f98f69d)]:
+  - @astrojs/markdown-remark@7.0.0-beta.3
+
 ## 6.0.0-beta.5
 
 ### Patch Changes
